@@ -26,6 +26,8 @@ Install the folder as one regular Hermes agent plugin from a Git repository or c
 
 This package has not yet been checked against a live Hermes Desktop installation. Compatibility should be verified against the target Hermes version before marketplace submission.
 
+The package declares Hermes `>=0.23.1`, the first supported release for its plugin RPC, model-task and Desktop event APIs.
+
 ## Data and network
 
 Reading items, source text, summaries, Q&A history, saved notes and configured feeds are stored in Hermes' plugin data directory. The app fetches public HTTPS feeds, article pages, PDFs, YouTube captions and GitHub's public repository search API. Downloads are capped at 12 MB. Redirect targets are checked and local/private addresses are rejected. Model calls use the active Hermes provider and its registered `Hermes Reading` auxiliary task; no provider is hard-coded.

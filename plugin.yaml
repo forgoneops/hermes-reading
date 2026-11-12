@@ -1,5 +1,6 @@
 name: hermes-reading
 version: 0.1.0
+requires_hermes: ">=0.23.1"
 description: Discover public feeds and GitHub projects, read web articles and papers, and keep a personal reading list in Hermes Desktop.
 provides_tools:
   - reading_search
