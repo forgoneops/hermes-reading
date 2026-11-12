@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "build:extractor": "bun build defuddle-extract.mjs --target=node --outfile=defuddle-extract.bundle.mjs"
+  },
+  "dependencies": {
+    "defuddle": "0.19.6",
+    "linkedom": "0.18.15"
+  }
+}

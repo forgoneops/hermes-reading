@@ -1,0 +1,14 @@
+name: hermes-reading
+version: 0.1.0
+description: Discover public feeds and GitHub projects, read web articles and papers, and keep a personal reading list in Hermes Desktop.
+provides_tools:
+  - reading_search
+  - reading_open
+  - reading_summarize
+  - reading_ask
+  - reading_save
+  - reading_note
+  - reading_delete
+  - reading_list
+  - reading_sources
+  - reading_projects
