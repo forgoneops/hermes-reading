@@ -1,9 +1,22 @@
 from __future__ import annotations
 
+import importlib
+import sys
+import types
+from pathlib import Path
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-import reading_core
+
+_PLUGIN_PACKAGE = "hermes_dashboard_plugin_hermes_reading"
+_PLUGIN_ROOT = Path(__file__).resolve().parents[1]
+if _PLUGIN_PACKAGE not in sys.modules:
+    package = types.ModuleType(_PLUGIN_PACKAGE)
+    package.__path__ = [str(_PLUGIN_ROOT)]
+    package.__package__ = _PLUGIN_PACKAGE
+    sys.modules[_PLUGIN_PACKAGE] = package
+reading_core = importlib.import_module(f"{_PLUGIN_PACKAGE}.reading_core")
 
 router = APIRouter()
 

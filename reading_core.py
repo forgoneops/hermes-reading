@@ -272,8 +272,16 @@ def read_youtube(url: str) -> dict:
                    "subtitleslangs": ["pl.*", "en.*"], "subtitlesformat": "vtt",
                    "outtmpl": str(Path(tmp) / "%(id)s.%(ext)s"), "socket_timeout": 20,
                    "max_filesize": MAX_BYTES, "noplaylist": True}
-        with yt_dlp.YoutubeDL(options) as ydl:
-            info = ydl.extract_info(base, download=True)
+        try:   # metadata first, so a refused subtitle download (YouTube answers 429) does not end the read: the audio fallback below still runs
+            with yt_dlp.YoutubeDL({**options, "writesubtitles": False, "writeautomaticsub": False}) as ydl:
+                info = ydl.extract_info(base, download=False)
+        except yt_dlp.utils.DownloadError as exc:
+            raise ValueError("YouTube refused the request right now. Try again in a few minutes.") from exc
+        try:
+            with yt_dlp.YoutubeDL(options) as ydl:
+                ydl.download([base])
+        except yt_dlp.utils.DownloadError:
+            pass
         duration = int(info.get("duration") or 0)
         if duration > 3 * 60 * 60:
             raise ValueError("Videos longer than three hours are not supported.")

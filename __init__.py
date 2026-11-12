@@ -5,8 +5,7 @@ import json
 import threading
 import uuid
 
-import reading_core
-import schemas
+from . import reading_core, schemas
 
 
 def _json(value: object) -> str:
