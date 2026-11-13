@@ -257,7 +257,7 @@ def read_url(url: str) -> dict:
 
 
 def extract_html(body: bytes, url: str) -> tuple[str, str, dict]:
-    """Run the same Defuddle + linkedom extraction used by Lectio; retain a Python fallback."""
+    """Extract an article with the bundled Defuddle + linkedom script; the caller keeps a Python fallback."""
     bridge = Path(__file__).with_name("defuddle-extract.bundle.mjs")
     node = shutil.which("node")
     if bridge.exists() and node:
