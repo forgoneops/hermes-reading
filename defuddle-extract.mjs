@@ -6,7 +6,7 @@ const url = process.argv[2]
 if (!url) throw new Error('URL argument is required')
 const html = readFileSync(0, 'utf8')
 const { document } = parseHTML(html)
-const result = await Defuddle(document, url, { markdown: true })
+const result = await Defuddle(document, url, { markdown: true, useAsync: false })
 const text = String(result.content ?? '')
   .replace(/^!\[[^\]]*\]\([^)]*\)\s*$/gm, '')
   .replace(/!\[[^\]]*\]\([^)]*\)/g, '')

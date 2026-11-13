@@ -36,6 +36,20 @@ class SourceRequest(BaseModel):
     url: str = Field(min_length=8, max_length=2048)
 
 
+class SettingsRequest(BaseModel):
+    summary_language: str = Field(min_length=1, max_length=80)
+
+
+@router.get("/settings")
+def settings():
+    return {"summary_language": reading_core.summary_language()}
+
+
+@router.put("/settings")
+def update_settings(body: SettingsRequest):
+    return {"summary_language": reading_core.set_summary_language(body.summary_language)}
+
+
 @router.get("/feed")
 def feed(q: str = "", saved: bool = False):
     try:

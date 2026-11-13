@@ -7,7 +7,7 @@ One Hermes Desktop workspace for discovering public technology feeds and GitHub 
 - **Discover:** recent stories from editable RSS/Atom sources.
 - **Projects:** public GitHub repository search with language filters.
 - **Reader:** use the same Defuddle + linkedom extraction approach as Lectio for public HTTPS articles, parse PDFs including arXiv papers, and read YouTube captions.
-- **Summaries and questions:** generate Polish summaries and source-grounded answers with the model configured in Hermes. Longer sources are summarized in chunks.
+- **Summaries and questions:** generate summaries and source-grounded answers in the language selected under Sources (English by default). Longer sources are summarized in chunks.
 - **Reading history:** revisit extracted text, summaries and question history.
 - **Notes:** save a Markdown copy to the plugin's private data directory.
 - **Optional transcription:** if captions are unavailable and faster-whisper is present in the Hermes plugin runtime, transcribe local audio for videos up to 75 minutes. The Whisper model downloads on first use.
@@ -27,6 +27,8 @@ Install the folder as one regular Hermes agent plugin from a Git repository or c
 This package has not yet been checked against a live Hermes Desktop installation. Compatibility should be verified against the target Hermes version before marketplace submission.
 
 The package declares Hermes `>=0.23.1`, the first supported release for its plugin RPC, model-task and Desktop event APIs.
+
+The Defuddle extractor bundle is rebuilt with `bun run build:extractor`; `bun.lock` pins its npm dependencies for repeatable builds.
 
 ## Data and network
 

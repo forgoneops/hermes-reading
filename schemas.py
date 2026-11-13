@@ -24,13 +24,13 @@ READING_OPEN = {
 READING_SUMMARIZE = {
     "name": "reading_summarize",
     "description": "Read and summarize a public article, PDF, arXiv paper, or YouTube video using the user's configured Hermes model. Saves the reading and source text in the plugin's private data store.",
-    "parameters": {"type": "object", "properties": {"url": {"type": "string"}}, "required": ["url"]},
+    "parameters": {"type": "object", "properties": {"url": {"type": "string"}, "language": {"type": "string", "description": "Optional summary language; defaults to the plugin setting (English)."}}, "required": ["url"]},
 }
 
 READING_ASK = {
     "name": "reading_ask",
     "description": "Answer a question only from source text previously opened by reading_open or reading_summarize. Includes the original source URL.",
-    "parameters": {"type": "object", "properties": {"item_id": {"type": "string"}, "question": {"type": "string"}}, "required": ["item_id", "question"]},
+    "parameters": {"type": "object", "properties": {"item_id": {"type": "string"}, "question": {"type": "string"}, "language": {"type": "string", "description": "Optional answer language; defaults to the plugin setting (English)."}}, "required": ["item_id", "question"]},
 }
 
 READING_SAVE = {

@@ -22,6 +22,7 @@ function ReadingPage({ ctx }) {
   const [sourceName, setSourceName] = useState('')
   const [sourceUrl, setSourceUrl] = useState('')
   const [language, setLanguage] = useState('')
+  const [summaryLanguage, setSummaryLanguage] = useState('English')
   const [busy, setBusy] = useState('')
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
@@ -44,6 +45,7 @@ function ReadingPage({ ctx }) {
     } catch (e) { setError(errText(e)) }
   }
   useEffect(() => { void load(tab === 'saved') }, [tab])
+  useEffect(() => { ctx.rest('/settings').then((settings) => setSummaryLanguage(settings.summary_language || 'English')).catch((e) => setError(errText(e))) }, [])
   useEffect(() => {
     if (tab !== 'history' || selected?.status !== 'working') return
     const timer = setTimeout(() => void load(false), 2500)
@@ -142,7 +144,7 @@ function ReadingPage({ ctx }) {
     const sessionId = host.state.focusedSessionId.get()
     if (!sessionId) { host.notify({ kind: 'info', message: 'Open a chat first, then ask Hermes to read this item.' }); return }
     const text = reading?.text || selected?.summary || ''
-    const prompt = `Read this source and summarize it in Polish. Keep names, dates and numbers exact. Separate what the source states from your interpretation.\n\nTitle: ${selected?.title || reading?.title || ''}\nURL: ${selected?.url || reading?.url || ''}\n\nSOURCE TEXT\n${text.slice(0, 16000)}\nEND SOURCE TEXT`
+    const prompt = `Read this source and summarize it in ${summaryLanguage}. Keep names, dates and numbers exact. Separate what the source states from your interpretation.\n\nTitle: ${selected?.title || reading?.title || ''}\nURL: ${selected?.url || reading?.url || ''}\n\nSOURCE TEXT\n${text.slice(0, 16000)}\nEND SOURCE TEXT`
     try {
       await host.composer.setDraft(sessionId, prompt)
       host.notify({ kind: 'success', message: 'Reading prompt added to the chat draft. Review it and press Send.' })
@@ -172,6 +174,7 @@ function ReadingPage({ ctx }) {
     error && jsx('div', { className: 'shrink-0 rounded-lg border border-(--ui-error) px-3 py-2 text-sm text-(--ui-error)', role: 'alert', children: error }),
     tab === 'sources' ? jsxs('div', { className: 'min-h-0 flex-1 overflow-y-auto', children: [
       jsxs('section', { className: `${card} grid gap-4 p-4`, children: [
+        jsxs('div', { className: 'flex flex-wrap items-center justify-between gap-3 border-b border-(--ui-stroke-secondary) pb-4', children: [jsxs('div', { children: [jsx('h2', { className: 'font-medium', children: 'Summary language' }), jsx('p', { className: 'mt-1 text-sm text-(--ui-text-tertiary)', children: 'Used for summaries and source questions. Defaults to English.' })] }), jsx('select', { className: `${field} w-auto`, value: summaryLanguage, 'aria-label': 'Summary and answer language', onChange: async (e) => { const value = e.target.value; setSummaryLanguage(value); try { const result = await ctx.rest('/settings', { method: 'PUT', body: { summary_language: value } }); setSummaryLanguage(result.summary_language); setMessage('Language preference saved.') } catch (err) { setError(errText(err)) } }, children: ['English', 'Polish', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 'Japanese', 'Chinese'].map((value) => jsx('option', { value, children: value }, value)) })] }),
         jsxs('div', { children: [jsx('h2', { className: 'font-medium', children: 'Your sources' }), jsx('p', { className: 'mt-1 text-sm text-(--ui-text-tertiary)', children: `${data.sources.length} feeds · choose sources you want in your daily reading` })] }),
         jsx('div', { className: 'grid gap-2 sm:grid-cols-2', children: data.sources.map((source) => jsxs('div', { className: 'flex min-w-0 items-center justify-between gap-3 rounded-lg border border-(--ui-stroke-secondary) px-3 py-2', children: [jsxs('div', { className: 'min-w-0', children: [jsx('div', { className: 'truncate text-sm font-medium', children: source.name }), jsx('div', { className: 'truncate text-xs text-(--ui-text-tertiary)', children: source.url })] }), jsx('button', { type: 'button', className: btn, onClick: async () => { try { const result = await ctx.rest(`/sources/${source.id}`, { method: 'DELETE' }); setData((old) => ({ ...old, sources: result.sources })) } catch (e) { setError(errText(e)) } }, children: 'Remove' })] }, source.id)) }),
         jsxs('form', { className: 'grid gap-2 border-t border-(--ui-stroke-secondary) pt-4 sm:grid-cols-[1fr_2fr_auto]', onSubmit: addSource, children: [

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import ipaddress
 import json
+import os
 import re
 import socket
 import sqlite3
@@ -33,6 +34,7 @@ DEFAULT_SOURCES = [
 MAX_BYTES = 12 * 1024 * 1024
 MAX_TEXT = 120_000
 _DATABASE_INITIALIZED = False
+SUMMARY_LANGUAGES = ("English", "Polish", "Spanish", "French", "German", "Italian", "Portuguese", "Japanese", "Chinese")
 
 
 def db_path() -> Path:
@@ -81,6 +83,27 @@ def connect() -> sqlite3.Connection:
         _DATABASE_INITIALIZED = True
     db.commit()
     return db
+
+
+def summary_language() -> str:
+    db = connect()
+    row = db.execute("SELECT value FROM plugin_meta WHERE key='summary_language'").fetchone()
+    db.close()
+    return normalize_summary_language(row[0] if row else "English")
+
+
+def normalize_summary_language(language: object) -> str:
+    value = str(language or "English").strip()
+    return value if value in SUMMARY_LANGUAGES else "English"
+
+
+def set_summary_language(language: str) -> str:
+    value = normalize_summary_language(language)
+    db = connect()
+    db.execute("INSERT INTO plugin_meta(key,value) VALUES('summary_language',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value", (value,))
+    db.commit()
+    db.close()
+    return value
 
 
 def public_https(url: str) -> str:
@@ -239,7 +262,11 @@ def extract_html(body: bytes, url: str) -> tuple[str, str, dict]:
     node = shutil.which("node")
     if bridge.exists() and node:
         try:
-            result = subprocess.run([node, str(bridge), url], input=body, capture_output=True, timeout=45, check=False)
+            env = {key: value for key, value in {
+                "PATH": str(Path(node).parent), "HOME": str(Path.home()),
+                "LANG": os.environ.get("LANG", "C.UTF-8"),
+            }.items() if value}
+            result = subprocess.run([node, str(bridge), url], input=body, capture_output=True, timeout=45, check=False, env=env)
             if result.returncode == 0:
                 parsed = json.loads(result.stdout)
                 return str(parsed.get("title") or ""), str(parsed.get("text") or ""), {k: parsed.get(k) for k in ("author", "published", "site")}
