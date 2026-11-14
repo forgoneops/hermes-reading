@@ -109,6 +109,7 @@ def register(ctx):
         if not slots.acquire(blocking=False):
             raise RuntimeError("Two readings are already in progress. Wait for one to finish.")
         try:
+            language = reading_core.normalize_summary_language(params.get("language") or reading_core.summary_language())
             item = reading_core.create_reading(str(params.get("url", "")))
             job = item["id"]
             def worker():
@@ -120,7 +121,7 @@ def register(ctx):
                                                 metadata_json=json.dumps({k: source.get(k) for k in ("author", "published", "site")}, ensure_ascii=False),
                                                 transcript_method=source.get("transcript_method", ""),
                                                 step="summarizing", fetched_at=__import__("time").time())
-                    summary = _summarize(ctx, source["text"], source["title"], source["url"], reading_core.summary_language())
+                    summary = _summarize(ctx, source["text"], source["title"], source["url"], language)
                     reading_core.update_reading(job, summary=summary, status="done", step="", error="")
                 except Exception as exc:
                     reading_core.update_reading(job, status="error", step="", error=str(exc)[:300])

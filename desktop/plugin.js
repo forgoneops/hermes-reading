@@ -74,12 +74,12 @@ function ReadingPage({ ctx }) {
     return () => { active = false; clearTimeout(timer) }
   }, [tab, query, language])
 
-  const startReading = async (target) => {
+  const startReading = async (target, language = summaryLanguage) => {
     const address = (target || url).trim()
     if (!address) return
     setBusy('read'); setError(''); setMessage('')
     try {
-      const result = await host.request('plugin.hermes-reading.reading.start', { url: /^https?:\/\//i.test(address) ? address : `https://${address}` })
+      const result = await host.request('plugin.hermes-reading.reading.start', { url: /^https?:\/\//i.test(address) ? address : `https://${address}`, language })
       setReading(null); setSelected({ id: result.id, url: address, title: 'Reading source…', status: 'working', step: 'fetching' }); setUrl(''); setTab('history'); setAnswer('')
     } catch (e) { setError(errText(e)) }
     finally { setBusy('') }
@@ -168,6 +168,7 @@ function ReadingPage({ ctx }) {
     ] }),
     jsxs('form', { className: `flex shrink-0 gap-2 p-2 ${card}`, onSubmit: (e) => { e.preventDefault(); void startReading(url) }, children: [
       jsx('input', { className: `${field} border-transparent bg-transparent`, type: 'text', inputMode: 'url', autoCapitalize: 'none', spellCheck: false, value: url, onChange: (e) => setUrl(e.target.value), placeholder: 'Paste an article, PDF, arXiv or YouTube link…', 'aria-label': 'Link to read' }),
+      jsx('select', { className: `${field} w-auto`, value: summaryLanguage, 'aria-label': 'Summary language', title: 'Summary language', onChange: async (e) => { const value = e.target.value; setSummaryLanguage(value); try { const result = await ctx.rest('/settings', { method: 'PUT', body: { summary_language: value } }); setSummaryLanguage(result.summary_language) } catch (err) { setError(errText(err)) } }, children: ['English', 'Polish', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 'Japanese', 'Chinese'].map((value) => jsx('option', { value, children: value }, value)) }),
       jsx('button', { className: `${btn} border-transparent bg-(--ui-accent) text-white`, type: 'submit', disabled: !url.trim() || !!busy, children: busy === 'read' ? 'Reading…' : 'Read' }),
     ] }),
     message && jsx('div', { className: 'shrink-0 text-sm text-(--ui-text-tertiary)', role: 'status', children: message }),

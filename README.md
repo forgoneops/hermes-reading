@@ -38,7 +38,7 @@ Python dependencies (`feedparser`, `httpx`, `trafilatura`, `PyMuPDF`, `yt-dlp`) 
 
 ## Origin
 
-Extracted from the author's own personal agent system, where it began as two modules (a feed watcher and a reader), and made standalone. It has no dependency on that system.
+This plugin merges two functions from the author's personal OS: feed discovery and long-form reading. It runs as a standalone Hermes plugin.
 
 ## Credits and licences
 
@@ -46,4 +46,4 @@ The plugin is MIT licensed. HTML extraction uses a bundled [Defuddle](https://gi
 
 ## Status
 
-Early release (0.1.0). Checked: the plugin validates against Hermes 0.23.1, registers its ten tools, and its fetching, address guard, feed refresh, article, PDF and arXiv reading and GitHub search were tested against live sources. YouTube sometimes answers 429 for captions; the plugin then reports it instead of failing silently. Not yet verified against a long-running Hermes Desktop session or other Hermes versions.
+Early release (0.1.1). Checked: the plugin validates against Hermes 0.23.1, registers its ten tools, and its fetching, address guard, feed refresh, article, PDF and arXiv reading and GitHub search were tested against live sources. YouTube sometimes answers 429 for captions; the plugin then reports it instead of failing silently. Not yet verified against a long-running Hermes Desktop session or other Hermes versions.
